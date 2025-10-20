@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING_VERIFICATION // Menunggu verifikasi email
+  SUSPENDED
+  BANNED
+}
+
+model User {
+  id    String @id @default(cuid()) @unique
+  name  String
+  email String @unique
+
+  // Otentikasi Email/Password
+  password String?
+  isEmailVerified Boolean @default(false)
+
+  // Otentikasi Oauth (Google, dll.)
+  googleId String? @unique
+
+  // Keamanan: Two-Factor Authentication (2FA)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret String?
+
+  // Keamanan: Reset Password
+  resetPasswordToken String? @unique
+  resetPasswordExpires DateTime?
+  
+  // Profil & Preferensi
+  image String? @default("https://placehold.co/150x150/000000/FFFFFF/png?text=U")
+  phoneNumber String?
+  bio String?
+  timezone String?
+  role Role @default(USER)
+
+  // Kolom Audit & Status
+  status UserStatus @default(PENDING_VERIFICATION)
+  lastLogin DateTime?
+
+  // Relasi
+  todoItems TodoItem[]
+  refreshTokens RefreshToken[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id String @id @default(cuid())
+  hashedToken String @unique
+  userId String
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+}
+
+model TodoItem {
+  id String @default(cuid()) @unique
+  ownerId String
+  title String
+  description String
+  isCompleted Boolean @default(false)
+  progress Int @default(0)
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+}
