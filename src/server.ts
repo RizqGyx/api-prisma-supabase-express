@@ -1,10 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
+const { ENV } = require("./config/env");
+const app = require("./bin/app");
 
-const app = express();
+const port = process.env.PORT;
 
-app.use(cors);
-app.use(morgan("dev"));
-
-console.log("hello");
+app.listen(ENV.PORT, () => {
+  console.log(`App Running On : http://localhost:${port}`);
+});
