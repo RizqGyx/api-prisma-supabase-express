@@ -1,5 +1,5 @@
-const { ENV } = require("./config/env");
-const app = require("./bin/app");
+import { ENV } from "./config/env.js";
+import app from "./bin/app.js";
 
 const port = process.env.PORT;
 

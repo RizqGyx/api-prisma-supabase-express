@@ -1,8 +1,8 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
 
-const router = require("../routes/index");
+import router from "../routes/index.js";
 
 const app = express();
 
@@ -11,4 +11,4 @@ app.use(morgan("dev"));
 
 app.use(router);
 
-module.exports = app;
+export default app;
