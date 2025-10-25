@@ -11,3 +11,5 @@ export const updateTodoSchema = z.object({
   isCompleted: z.boolean().optional(),
   progress: z.number().min(0).max(100).optional(),
 });
+
+export default { createTodoSchema, updateTodoSchema };

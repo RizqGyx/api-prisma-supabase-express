@@ -1,7 +1,8 @@
-const router = require("express").Router();
+import { Router } from "express";
+import TodoRouter from "./todo.routes.js";
 
-const TodoRouter = require("./toDoRouter");
+const router = Router();
 
 router.use("/api/v1/todo", TodoRouter);
 
-module.exports = router;
+export default router;

@@ -1,26 +1,56 @@
-const { Request, Response } = require("express");
-const TodoService = require("../services/todo.service");
+import type { Request, Response, NextFunction } from "express";
+import { todoService } from "../services/todo.service.js";
 
-export const getTodos = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
-  const todos = await TodoService.getAllTodos(userId);
-  res.json(todos);
+export const getTodos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const todos = await todoService.getAllTodos(req.user!.id);
+    res.json(todos);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const createTodo = async (req: Request, res: Response) => {
-  const userId = req.user?.id;
-  const todo = await TodoService.createTodo(userId, req.body);
-  res.status(201).json(todo);
+export const createTodo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const todo = await todoService.createTodo(req.user!.id, req.body);
+    res.status(201).json(todo);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const updateTodo = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updated = await TodoService.updateTodo(id, req.body);
-  res.json(updated);
+export const updateTodo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const updated = await todoService.updateTodo(req.params.id, req.body);
+    res.json(updated);
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const deleteTodo = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  await TodoService.deleteTodo(id);
-  res.status(204).send();
+export const deleteTodo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await todoService.deleteTodo(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 };
+
+export default { getTodos, createTodo, updateTodo, deleteTodo };
